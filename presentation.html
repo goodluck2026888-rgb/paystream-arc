@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayStream Arc — Presentation</title>
+  <style>
+    :root {
+      --bg: #050b14;
+      --card: #0d1420;
+      --primary: #3b82f6;
+      --accent: #22c55e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: rgba(148, 163, 184, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 6vh 8vw;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(60px);
+      transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 0;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+      z-index: 1;
+    }
+
+    .slide.prev {
+      transform: translateX(-60px);
+    }
+
+    h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); margin: 0 0 0.4em; line-height: 1.1; }
+    h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); margin: 0 0 0.6em; color: var(--primary); }
+    h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); margin: 0 0 0.5em; color: var(--accent); }
+    p { font-size: clamp(1rem, 1.6vw, 1.25rem); line-height: 1.6; color: var(--muted); max-width: 80ch; margin: 0 0 1em; }
+    ul { font-size: clamp(1rem, 1.5vw, 1.2rem); color: var(--text); line-height: 1.8; max-width: 70ch; }
+    li { margin-bottom: 0.4em; }
+    code {
+      background: rgba(59, 130, 246, 0.12);
+      color: #93c5fd;
+      padding: 0.15em 0.45em;
+      border-radius: 0.35em;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.9em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      padding: 0.35em 0.85em;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2em;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1.2rem;
+      padding: 1.8rem 2.2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      max-width: 920px;
+      width: 100%;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.4rem;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    .feature {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.4rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .feature:hover { transform: translateY(-3px); border-color: rgba(59, 130, 246, 0.4); }
+    .feature h3 { margin-top: 0; }
+    .feature p { font-size: 0.95rem; margin-bottom: 0; }
+
+    .metric {
+      text-align: center;
+      padding: 1.4rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+    }
+    .metric .value {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+    }
+    .metric .label { color: var(--muted); font-size: 0.95rem; }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.85em 1.6em;
+      border-radius: 0.65em;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-top: 1em;
+      transition: background 0.2s;
+    }
+    .cta:hover { background: #2563eb; }
+
+    .code-block {
+      background: #02050a;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.2rem 1.4rem;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      overflow-x: auto;
+      line-height: 1.5;
+      text-align: left;
+      max-width: 900px;
+      width: 100%;
+    }
+    .code-block .key { color: #93c5fd; }
+    .code-block .str { color: #86efac; }
+    .code-block .num { color: #fca5a5; }
+
+    .arrow-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+      margin: 1.2rem 0;
+    }
+    .flow-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.6rem;
+      padding: 0.6rem 1rem;
+      color: var(--text);
+    }
+    .flow-arrow { color: var(--primary); font-weight: 700; }
+
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%;
+      transition: width 0.3s ease;
+      z-index: 10;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.6rem;
+      z-index: 10;
+    }
+    .controls button {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .controls button:hover { background: rgba(59, 130, 246, 0.15); border-color: var(--primary); }
+
+    .counter {
+      position: fixed;
+      bottom: 1.3rem;
+      left: 1.5rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      z-index: 10;
+    }
+
+    .logo-mark {
+      width: 64px;
+      height: 64px;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .slide { padding: 4vh 6vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <!-- Slide 1: Title -->
+    <section class="slide active">
+      <div class="logo-mark">💸</div>
+      <div class="badge">Arc Hackathon · Agentic Economy Track</div>
+      <h1>PayStream Arc</h1>
+      <p style="font-size: 1.35rem; color: var(--text);">Real-time USDC payment streams for AI agents and SaaS</p>
+      <p>Recurring billing, per-second settlement, and x402 pay-per-request analytics — built on Arc L1 with Circle USDC.</p>
+      <a class="cta" href="https://github.com/" target="_blank" rel="noopener">View on GitHub →</a>
+    </section>
+
+    <!-- Slide 2: Problem -->
+    <section class="slide">
+      <h2>The Problem</h2>
+      <p>Traditional recurring payments are broken for machine-to-machine economies:</p>
+      <div class="grid-2">
+        <div class="feature">
+          <h3>⏳ Settlement lag</h3>
+          <p>Invoices, net-30 terms, and batch ACH create cash-flow gaps for vendors.</p>
+        </div>
+        <div class="feature">
+          <h3>🔒 Locked capital</h3>
+          <p>Subscriptions require upfront payment or escrow before service is consumed.</p>
+        </div>
+        <div class="feature">
+          <h3>🤖 Agent friction</h3>
+          <p>AI agents cannot sign paper contracts or manage credit-card retry logic.</p>
+        </div>
+        <div class="feature">
+          <h3>📊 No visibility</h3>
+          <p>Businesses lack real-time insight into which streams are healthy or interrupted.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Solution -->
+    <section class="slide">
+      <h2>Our Solution</h2>
+      <p>PayStream Arc turns recurring USDC transfers into on-chain streaming payment agreements.</p>
+      <div class="grid-3">
+        <div class="metric"><span class="value">Per-second</span><span class="label">flow accrual</span></div>
+        <div class="metric"><span class="value">$0.001</span><span class="label">per API request</span></div>
+        <div class="metric"><span class="value">Anytime</span><span class="label">withdrawal by receiver</span></div>
+      </div>
+      <ul style="margin-top: 1.6rem;">
+        <li>Sender starts a stream with a fixed <code>flowRate</code> in USDC/second.</li>
+        <li>Receiver withdraws accrued balance whenever they want.</li>
+        <li>Either party can stop the stream at any time.</li>
+        <li>AI agents query analytics through an x402 paywall.</li>
+      </ul>
+    </section>
+
+    <!-- Slide 4: Architecture -->
+    <section class="slide">
+      <h2>Architecture</h2>
+      <div class="card">
+        <div class="arrow-flow">
+          <span class="flow-box">Arc L1 USDC transfers</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-box">PayStream Indexer</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-box">Pattern Detection</span>
+        </div>
+        <div class="arrow-flow">
+          <span class="flow-box">x402 Payment Gateway</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-box">Circle Facilitator</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-box">JSON API Response</span>
+        </div>
+        <div class="arrow-flow">
+          <span class="flow-box">Circle AppKit <code>send()</code></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-box">Viem Adapter</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-box">Stream Settlement</span>
+        </div>
+      </div>
+      <p style="margin-top: 1.2rem;">Indexer polls Arc L1 every 15 seconds, detects recurring transfer patterns, and exposes them through an x402-protected API.</p>
+    </section>
+
+    <!-- Slide 5: Tech Stack -->
+    <section class="slide">
+      <h2>Tech Stack</h2>
+      <div class="grid-2">
+        <div class="feature">
+          <h3>⛓️ Arc L1 Testnet</h3>
+          <p>Chain ID 5042002 · native USDC gas and transfers.</p>
+        </div>
+        <div class="feature">
+          <h3>💲 USDC</h3>
+          <p>Contract <code>0x3600…0000</code> — unified gas + settlement token.</p>
+        </div>
+        <div class="feature">
+          <h3>🔌 x402 Protocol</h3>
+          <p>HTTP 402 nanopayments for every analytics request.</p>
+        </div>
+        <div class="feature">
+          <h3>🟣 Circle App Kit</h3>
+          <p>Wallets, Gateway quotes, and <code>send()</code> settlement via viem adapter.</p>
+        </div>
+        <div class="feature">
+          <h3>⚡ Node.js 22 ESM</h3>
+          <p>Express API server + ethers.js v6 indexer.</p>
+        </div>
+        <div class="feature">
+          <h3>🛠️ Foundry</h3>
+          <p>Solidity 0.8.24 · comprehensive unit tests · optimizer 200 runs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Smart Contract -->
+    <section class="slide">
+      <h2>On-Chain Protocol</h2>
+      <p><code>PayStream.sol</code> stores streaming agreements on Arc L1.</p>
+      <div class="code-block">
+struct Stream {
+  <span class="key">bytes32</span> streamId;
+  <span class="key">address</span> sender;
+  <span class="key">address</span> receiver;
+  <span class="key">uint256</span> flowRate;       <span class="str">// USDC per second</span>
+  <span class="key">uint256</span> startTime;
+  <span class="key">uint256</span> stopTime;
+  <span class="key">uint256</span> withdrawnAmount;
+  <span class="key">bool</span> active;
+}
+
+<span class="key">function</span> startStream(<span class="key">address</span> _receiver, <span class="key">uint256</span> _flowRate) <span class="key">external</span>;
+<span class="key">function</span> stopStream(<span class="key">bytes32</span> _streamId) <span class="key">external</span>;
+<span class="key">function</span> withdrawFromStream(<span class="key">bytes32</span> _streamId) <span class="key">external</span>;
+      </div>
+      <p style="margin-top: 1rem;">All math is done in base units (6 decimals) and settlement pulls USDC from the sender at withdrawal time.</p>
+    </section>
+
+    <!-- Slide 7: Pattern Detection -->
+    <section class="slide">
+      <h2>Stream Detection Engine</h2>
+      <p>The indexer groups USDC transfers by <code>sender → receiver</code> and scores them for recurrence.</p>
+      <div class="grid-2">
+        <div class="feature">
+          <h3>Interval regularity</h3>
+          <p>Coefficient of variation between consecutive transfer block numbers.</p>
+        </div>
+        <div class="feature">
+          <h3>Amount consistency</h3>
+          <p>CV of transfer values to detect subscription-like fixed payments.</p>
+        </div>
+        <div class="feature">
+          <h3>Flow rate</h3>
+          <p>Total value divided by stream duration in seconds.</p>
+        </div>
+        <div class="feature">
+          <h3>Interruption alert</h3>
+          <p>Flags streams that have not received a payment within 50 blocks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: API -->
+    <section class="slide">
+      <h2>x402-Powered API</h2>
+      <p>Agents pay $0.001 USDC per request to access real-time stream data.</p>
+      <div class="code-block">
+GET /health              <span class="str"># free</span>
+GET /stats               <span class="str"># free</span>
+GET /streams             <span class="str"># x402: $0.001 USDC</span>
+GET /streams/:id         <span class="str"># x402: $0.001 USDC</span>
+POST /api/stream/settle  <span class="str"># x402 + Circle AppKit send()</span>
+      </div>
+      <p style="margin-top: 1rem;">Unpaid requests return <code>402 Payment Required</code> with a <code>WWW-Authenticate</code> header; paid requests include an <code>X-Payment-Response</code> settlement proof.</p>
+    </section>
+
+    <!-- Slide 9: Circle Integration -->
+    <section class="slide">
+      <h2>Circle Integration</h2>
+      <div class="grid-2">
+        <div class="feature">
+          <h3>🟣 Circle Wallets</h3>
+          <p>Server wallet holds USDC and acts as the x402 payment recipient.</p>
+        </div>
+        <div class="feature">
+          <h3>🌉 Circle Gateway</h3>
+          <p>Cross-chain USDC settlement and bridging support for stream funding.</p>
+        </div>
+        <div class="feature">
+          <h3>⚡ Batch Facilitator</h3>
+          <p>Verifies x402 nanopayments and returns on-chain settlement proof.</p>
+        </div>
+        <div class="feature">
+          <h3>🔑 AppKit + viem</h3>
+          <p><code>createViemAdapterFromPrivateKey</code> signs settlement transactions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Use Cases -->
+    <section class="slide">
+      <h2>Use Cases</h2>
+      <div class="grid-3">
+        <div class="feature">
+          <h3>🤖 AI Agent Subscriptions</h3>
+          <p>Pay-per-second access to model APIs, compute, or data feeds.</p>
+        </div>
+        <div class="feature">
+          <h3>📦 SaaS Billing</h3>
+          <p>Continuous revenue recognition instead of monthly invoices.</p>
+        </div>
+        <div class="feature">
+          <h3>🎙️ Creator Revenue</h3>
+          <p>Fans stream USDC to creators minute-by-minute.</p>
+        </div>
+        <div class="feature">
+          <h3>🏦 Payroll Streams</h3>
+          <p>Employees withdraw wages as they accrue, not twice a month.</p>
+        </div>
+        <div class="feature">
+          <h3>🌐 IoT Micropayments</h3>
+          <p>Devices pay for bandwidth, storage, and energy in real time.</p>
+        </div>
+        <div class="feature">
+          <h3>📈 Analytics APIs</h3>
+          <p>x402 paywall monetizes real-time stream health data.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: Roadmap -->
+    <section class="slide">
+      <h2>Roadmap</h2>
+      <div class="grid-2">
+        <div class="feature">
+          <h3>✅ Done</h3>
+          <p>PayStream.sol, detection engine, x402 API, Circle AppKit settlement, Foundry tests.</p>
+        </div>
+        <div class="feature">
+          <h3>🔄 Next</h3>
+          <p>Web dashboard for merchants; stream health charts and revenue forecasting.</p>
+        </div>
+        <div class="feature">
+          <h3>🔮 Future</h3>
+          <p>ERC-4626 yield vaults for idle stream capital; cross-chain streams via Circle CCTP.</p>
+        </div>
+        <div class="feature">
+          <h3>🚀 Scale</h3>
+          <p>Indexer backfill, subgraph integration, and SaaS billing templates.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12: Closing -->
+    <section class="slide">
+      <div class="logo-mark">💸</div>
+      <h1>PayStream Arc</h1>
+      <p style="font-size: 1.3rem; color: var(--text);">Streaming USDC payments for the agentic economy.</p>
+      <div class="grid-3" style="margin-top: 1.5rem; max-width: 720px;">
+        <div class="metric"><span class="value">Arc L1</span><span class="label">Chain ID 5042002</span></div>
+        <div class="metric"><span class="value">USDC</span><span class="label">Gas + settlement</span></div>
+        <div class="metric"><span class="value">x402</span><span class="label">Pay-per-request</span></div>
+      </div>
+      <a class="cta" href="https://github.com/" target="_blank" rel="noopener">Try the Demo →</a>
+    </section>
+
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="counter" id="counter">1 / 12</div>
+  <div class="controls">
+    <button id="prev" aria-label="Previous slide">◀</button>
+    <button id="next" aria-label="Next slide">▶</button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    let current = 0;
+    const total = slides.length;
+
+    function show(i) {
+      slides.forEach((s, idx) => {
+        s.classList.remove('active', 'prev');
+        if (idx === i) s.classList.add('active');
+        else if (idx < i) s.classList.add('prev');
+      });
+      current = i;
+      progress.style.width = ((current + 1) / total * 100) + '%';
+      counter.textContent = (current + 1) + ' / ' + total;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+    }
+
+    prevBtn.addEventListener('click', () => current > 0 && show(current - 1));
+    nextBtn.addEventListener('click', () => current < total - 1 && show(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        if (current < total - 1) show(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        if (current > 0) show(current - 1);
+      } else if (e.key === 'Home') {
+        show(0);
+      } else if (e.key === 'End') {
+        show(total - 1);
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      if (dx < -40 && current < total - 1) show(current + 1);
+      if (dx > 40 && current > 0) show(current - 1);
+    });
+
+    show(0);
+  </script>
+</body>
+</html>
