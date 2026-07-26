@@ -1,0 +1,30 @@
+{
+  "name": "paystream-arc",
+  "version": "1.0.0",
+  "description": "PayStream Arc enables businesses to accept recurring USDC payments on Arc L1. The API handles subscr",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "indexer": "node src/indexer.js",
+    "dev": "concurrently \"npm:indexer\" \"npm:start\"",
+    "deploy": "node scripts/deploy.js",
+    "test": "node scripts/test-payment.js",
+    "forge:build": "forge build",
+    "forge:test": "forge test"
+  },
+  "dependencies": {
+    "ethers": "^6.13.4",
+    "express": "^4.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "@circle-fin/app-kit": "^1.0.0",
+    "@circle-fin/adapter-viem-v2": "^1.0.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

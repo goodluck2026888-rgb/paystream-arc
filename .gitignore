@@ -1,0 +1,19 @@
+# Project: PayStream Arc
+node_modules/
+.env
+.env.*
+
+# Foundry artifacts
+out/
+cache/
+broadcast/
+forge-cache/
+
+# Node
+*.log
+npm-debug.log*
+
+# Editor
+.idea/
+.vscode/
+*.swp
